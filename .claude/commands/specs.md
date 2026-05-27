@@ -1,9 +1,9 @@
-Muestra todas las specs aprobadas y listas para implementar.
+Show all approved specs ready to implement.
 
-Ejecuta: `gh issue list --label "spec-approved" --state open`
+Run: `gh issue list --label "spec-approved" --state open`
 
-Con el resultado:
-1. Presenta una tabla con: número, título, asignado y fecha de creación.
-2. Indica el total de specs pendientes.
-3. Si hay más de una, sugiere empezar por la más antigua.
-4. Recuerda que para cargar el contexto completo de una spec se usa `/spec <número>`.
+With the result:
+1. Present a table with: number, title, assignee and creation date.
+2. Show the total number of pending specs.
+3. If there is more than one, suggest starting with the oldest.
+4. Remind that to load the full context of a spec use `/spec <number>`.

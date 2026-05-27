@@ -1,39 +1,39 @@
-Lee el Issue de GitHub con número $ARGUMENTS y úsalo como contexto de trabajo.
+Read the GitHub Issue with number $ARGUMENTS and use it as working context.
 
-Ejecuta en secuencia:
+Run in sequence:
 - `gh issue view $ARGUMENTS`
 - `gh issue view $ARGUMENTS --comments`
 
-Presenta la información con esta estructura:
+Present the information with this structure:
 
-## Resumen
-Número, título, estado, asignado, labels.
+## Summary
+Number, title, status, assignee, labels.
 
-## Verificación
-Confirma que tiene el label `spec-approved`. Si no lo tiene, advierte que la spec no está aprobada: se puede continuar leyendo o discutiendo la spec, pero no implementar.
+## Verification
+Confirm it has the `spec-approved` label. If it does not, warn that the spec is not approved: reading or discussing the spec can continue, but implementation cannot start.
 
-## Contexto y objetivo
-Problema que resuelve y objetivo en una oración.
+## Context and objective
+Problem it solves and objective in one sentence.
 
-## Comportamiento esperado
-- **Input:** qué recibe el sistema (tipo, formato, ejemplo)
-- **Output:** qué produce (tipo, formato, ejemplo)
-- **Flujo principal:** pasos numerados
+## Expected behavior
+- **Input:** what the system receives (type, format, example)
+- **Output:** what it produces (type, format, example)
+- **Main flow:** numbered steps
 
-## Criterios de aceptación
-Lista completa con checkboxes. Si alguno está en duda, señálalo.
+## Acceptance criteria
+Full list with checkboxes. If any criterion is unclear, flag it.
 
-## Casos límite y errores
-Lista completa de escenarios edge.
+## Edge cases and errors
+Full list of edge scenarios.
 
-## Preguntas abiertas
-Si quedan preguntas sin responder, advierte que deben resolverse antes de codear.
+## Open questions
+If there are unanswered questions, warn that they must be resolved before coding.
 
-## Notas de diseño
-Restricciones técnicas, dependencias y decisiones relevantes.
+## Design notes
+Technical constraints, dependencies and relevant decisions.
 
-## Comentarios del Issue
-Muestra los comentarios con decisiones o aclaraciones importantes tomadas durante el review de la spec.
+## Issue comments
+Show comments with important decisions or clarifications made during the spec review.
 
 ---
-Al finalizar indica que estás listo para implementar y espera instrucciones.
+When done, indicate you are ready to implement and wait for instructions.
