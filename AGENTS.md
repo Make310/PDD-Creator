@@ -49,6 +49,7 @@ Examples:
 | `.claude/agents/reviewer.md` | Reviewer role | Reviewer |
 | `.github/PULL_REQUEST_TEMPLATE.md` | PR sections | Leader when creating PR |
 | `docs/architecture.md` | System diagrams and module boundaries | All agents before implementing |
+| `docs/database.md` | Collections, schemas, ODM, access patterns | Implementer (api/, worker/) |
 | `docs/backend/code-style.md` | Python style: type annotations, logging, exceptions | Implementer (api/, worker/) |
 | `docs/backend/clean-architecture.md` | Layer rules and command pattern | Implementer (api/, worker/) |
 | `docs/backend/testing/test-structure.md` | Three test tiers and layout rules | Implementer (api/, worker/) |
