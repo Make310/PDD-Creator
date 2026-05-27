@@ -43,6 +43,7 @@ Examples:
 | `.claude/agents/implementer.md` | Implementer role | Implementer |
 | `.claude/agents/reviewer.md` | Reviewer role | Reviewer |
 | `.github/PULL_REQUEST_TEMPLATE.md` | PR sections | Leader when creating PR |
+| `docs/architecture.md` | System diagrams and module boundaries | All agents before implementing |
 
 ## Non-negotiable rules
 
