@@ -1,16 +1,16 @@
-# Estado actual
+# Current state
 
-**Última actualización:** 2026-05-22
-**Issue activo:** #2 — [SPEC] Procesar transcripción de Teams y generar borrador de PDD
-**Estado:** spec-approved — listo para implementar
+**Last updated:** 2026-05-22
+**Active issue:** #2 — [SPEC] Process Teams transcript and generate PDD draft
+**State:** spec-approved — ready to implement
 
-## Próximo paso
+## Next step
 
-Lanzar implementer para el Issue #2.
+Launch implementer for Issue #2.
 
-## Notas de sesión
+## Session notes
 
-- Harness SDD configurado: subagentes, AGENTS.md, progress/, hooks
-- Stack definido: Python + Claude AI
+- SDD harness configured: subagents, AGENTS.md, progress/, hooks
+- Stack defined: Python + Claude AI
 - Output: Markdown
-- Sin plantilla corporativa fija por ahora
+- No fixed corporate template for now

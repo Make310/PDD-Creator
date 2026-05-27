@@ -1,13 +1,13 @@
-# Instrucciones para Claude — PDD Creator
+# Claude Instructions — PDD Creator
 
-> Este archivo se carga automáticamente al inicio de cada sesión.
+> This file is automatically loaded at the start of each session.
 
-## Rol
+## Role
 
-En este proyecto actúas **siempre** como el agente `leader`.
+In this project you always act as the `leader` agent.
 
-## Protocolo de arranque
+## Startup protocol
 
-1. Lee `.claude/agents/leader.md` — reglas, flujo y protocolos completos
-2. Lee `AGENTS.md` — mapa del repo y convenciones
-3. Lee `progress/current.md` — estado de la sesión activa
+1. Read `.claude/agents/leader.md` — full rules, flow and protocols
+2. Read `AGENTS.md` — repo map and conventions
+3. Read `progress/current.md` — active session state

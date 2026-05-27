@@ -1,71 +1,68 @@
-# AGENTS.md — Mapa de navegación
+# AGENTS.md — Navigation Map
 
-Punto de entrada para cualquier agente. Lee esto primero, luego solo lo que necesites.
+Entry point for any agent. Read this first, then only what you need.
 
-## Convención de nombres
+## Naming conventions
 
-Los features de este proyecto son Issues de GitHub. Usa siempre `issue_<n>` como identificador:
+Features in this project are GitHub Issues. Always use `issue_<n>` as the identifier:
 
-- `progress/impl_issue_2.md` — implementación del Issue #2
-- `progress/review_issue_2.md` — revisión del Issue #2
-- `feat/issue-2` — rama de desarrollo del Issue #2
+- `progress/impl_issue_2.md` — implementation of Issue #2
+- `progress/review_issue_2.md` — review of Issue #2
+- `feat/issue-2` — development branch for Issue #2
 
 ## Conventional Commits
 
-Formato obligatorio para todos los commits: `type(issue-<n>): descripción en imperativo`
+Mandatory format for all commits: `type(issue-<n>): description in imperative`
 
-| Type | Cuándo usarlo |
-|------|--------------|
-| `feat` | nueva funcionalidad |
-| `fix` | corrección de bug |
-| `refactor` | restructuración sin cambio de comportamiento |
-| `test` | agregar o corregir tests |
-| `docs` | solo documentación |
-| `chore` | configuración, dependencias, archivos de proyecto |
+| Type | When to use |
+|------|-------------|
+| `feat` | new functionality |
+| `fix` | bug fix |
+| `refactor` | restructuring without behavior change |
+| `test` | adding or fixing tests |
+| `docs` | documentation only |
+| `chore` | configuration, dependencies, project files |
 
-Ejemplos:
+Examples:
 - `feat(issue-2): add PDF export endpoint`
 - `fix(issue-2): handle null response in parser`
 - `test(issue-2): add edge cases for empty input`
 
+## Repository map
 
-## Mapa del repositorio
+| Path | Contents | Who uses it |
+|------|----------|-------------|
+| `AGENTS.md` | This map | Everyone, first |
+| `CLAUDE.md` | Leader role and instructions | Claude at session start |
+| `progress/current.md` | Active session state | Leader (writes), everyone (reads) |
+| `progress/history.md` | Past session log | Leader (append on close) |
+| `progress/impl_issue_<n>.md` | What the implementer did | Reviewer (reads), leader (reference) |
+| `progress/review_issue_<n>.md` | Reviewer verdict | Leader (decides PR or retry) |
+| `progress/feedback_issue_<n>.md` | User feedback / denied PR | Leader (writes), implementer (reads) |
+| `.claude/agents/leader.md` | Orchestrator role | Leader |
+| `.claude/agents/implementer.md` | Implementer role | Implementer |
+| `.claude/agents/reviewer.md` | Reviewer role | Reviewer |
+| `.github/PULL_REQUEST_TEMPLATE.md` | PR sections | Leader when creating PR |
 
-| Ruta | Qué contiene | Quién la usa |
-|------|-------------|--------------|
-| `AGENTS.md` | Este mapa | Todos, primero |
-| `CLAUDE.md` | Rol e instrucciones del leader | Claude al arrancar sesión |
-| `progress/current.md` | Estado de la sesión activa | Leader (escribe), todos (leen) |
-| `progress/history.md` | Bitácora de sesiones pasadas | Leader (append al cerrar) |
-| `progress/impl_issue_<n>.md` | Qué implementó el implementer | Reviewer (lee), leader (referencia) |
-| `progress/review_issue_<n>.md` | Veredicto del reviewer | Leader (decide PR o retry) |
-| `progress/feedback_issue_<n>.md` | Feedback del usuario/PR denegado | Leader (escribe), implementer (lee) |
-| `.claude/agents/leader.md` | Rol del orquestador | Leader |
-| `.claude/agents/implementer.md` | Rol del implementer | Implementer |
-| `.claude/agents/reviewer.md` | Rol del reviewer | Reviewer |
-| `.github/PULL_REQUEST_TEMPLATE.md` | Secciones del PR | Leader al crear PR |
+## Non-negotiable rules
 
+1. **One issue at a time** — do not start the next until the current one is closed
+2. **spec-approved required** — no coding without that label
+3. **Verification before PR** — if there is a test suite, it must pass before creating the PR
+4. **Subagents write to disk** — they do not return code to the chat
+5. **progress/ is the memory** — anything that must survive the context window goes there
+6. **Only the leader writes current.md** — implementer and reviewer do not touch it
+7. **The user has the final word** — if the PR is denied, treat it as `CHANGES_REQUESTED` even if the reviewer approved
 
-## Reglas no negociables
-
-1. **Un Issue a la vez** — no empezar el siguiente hasta cerrar el actual
-2. **spec-approved obligatorio** — sin ese label no se codea
-3. **Verificación antes de PR** — si hay suite de tests, deben pasar antes de crear el PR
-4. **Subagentes escriben en disco** — no devuelven código al chat
-5. **progress/ es la memoria** — todo lo que deba sobrevivir al context window va ahí
-6. **Solo el leader escribe current.md** — implementer y reviewer no lo tocan
-7. **El usuario tiene la última palabra** — si deniega el PR, se trata como `CHANGES_REQUESTED` aunque el reviewer haya aprobado
-
-## Comandos útiles
+## Useful commands
 
 ```bash
-# Ver specs pendientes
+# List approved specs
 gh issue list --label "spec-approved" --state open
 
-# Ver Issue completo con comentarios
+# View full issue with comments
 gh issue view <n> --comments
 
-# Cerrar Issue tras merge
-gh issue close <n> --comment "Implementado en PR #<pr>"
+# Close issue after merge
+gh issue close <n> --comment "Implemented in PR #<pr>"
 ```
-

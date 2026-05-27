@@ -1,57 +1,57 @@
 ---
 name: "Spec — Feature / Change"
-about: "Especificación de una nueva funcionalidad o cambio antes de escribir código."
+about: "Specification of a new feature or change before writing code."
 title: "[SPEC] "
 labels: ["spec", "needs-review"]
 assignees: ""
 ---
 
-## Contexto
+## Context
 
-<!-- ¿Qué problema resuelve esto? ¿Por qué es necesario ahora? -->
+<!-- What problem does this solve? Why is it needed now? -->
 
-## Objetivo
+## Objective
 
-<!-- Una sola oración que describe qué debe lograr esta funcionalidad. -->
+<!-- A single sentence describing what this feature must achieve. -->
 
-## Comportamiento esperado
+## Expected behavior
 
 ### Input
 
-<!-- ¿Qué recibe el sistema? (tipo, formato, ejemplo) -->
+<!-- What does the system receive? (type, format, example) -->
 
 ### Output
 
-<!-- ¿Qué produce el sistema? (tipo, formato, ejemplo) -->
+<!-- What does the system produce? (type, format, example) -->
 
-### Flujo principal
+### Main flow
 
-<!-- Pasos numerados del happy path -->
+<!-- Numbered steps of the happy path -->
 
 1.
 2.
 3.
 
-## Criterios de aceptación
+## Acceptance criteria
 
-<!-- Lista verificable. Cada ítem debe poder marcarse como ✅ o ❌ -->
-
-- [ ]
-- [ ]
-- [ ]
-
-## Casos límite / errores esperados
-
-<!-- ¿Qué debe pasar si el input es inválido, está vacío, o el servicio falla? -->
+<!-- Verifiable list. Each item must be markable as ✅ or ❌ -->
 
 - [ ]
+- [ ]
+- [ ]
 
-## Preguntas abiertas
+## Edge cases / expected errors
 
-<!-- Dudas que deben resolverse antes de aprobar la spec -->
+<!-- What should happen if the input is invalid, empty, or the service fails? -->
 
 - [ ]
 
-## Notas de diseño
+## Open questions
 
-<!-- Restricciones técnicas, dependencias, decisiones relevantes (opcional) -->
+<!-- Doubts that must be resolved before approving the spec -->
+
+- [ ]
+
+## Design notes
+
+<!-- Technical constraints, dependencies, relevant decisions (optional) -->
