@@ -24,5 +24,5 @@ Closes #<!-- número del Issue-spec aprobado -->
 
 - [ ] El código referencia el Issue-spec aprobado
 - [ ] Los criterios de aceptación están cubiertos
-- [ ] No quedan imports sin usar
+- [ ] No quedan dependencias, declaraciones o código muerto sin uso
 - [ ] Se agregaron o actualizaron tests si aplica

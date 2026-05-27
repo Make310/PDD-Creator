@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- Estado del repo ---' && git status --short 2>/dev/null && echo '-----------------------'"
+          }
+        ]
+      }
+    ]
+  }
+}
