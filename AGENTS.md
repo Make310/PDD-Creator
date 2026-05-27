@@ -4,10 +4,15 @@ Entry point for any agent. Read this first, then only what you need.
 
 ## Naming conventions
 
-Features in this project are GitHub Issues. Always use `issue_<n>` as the identifier:
+Features in this project are GitHub Issues. Three identifier formats are used depending on context:
 
-- `progress/impl_issue_2.md` — implementation of Issue #2
-- `progress/review_issue_2.md` — review of Issue #2
+- `#2` — GitHub Issue number
+- `feat/issue-2` — git branch (dash separator)
+- `impl_issue_2` / `review_issue_2` — progress file names (underscore separator)
+
+Examples:
+- `progress/impl_issue_2.md` — implementation log for Issue #2
+- `progress/review_issue_2.md` — review verdict for Issue #2
 - `feat/issue-2` — development branch for Issue #2
 
 ## Conventional Commits
@@ -44,6 +49,14 @@ Examples:
 | `.claude/agents/reviewer.md` | Reviewer role | Reviewer |
 | `.github/PULL_REQUEST_TEMPLATE.md` | PR sections | Leader when creating PR |
 | `docs/architecture.md` | System diagrams and module boundaries | All agents before implementing |
+| `docs/backend/code-style.md` | Python style: type annotations, logging, exceptions | Implementer (api/, worker/) |
+| `docs/backend/clean-architecture.md` | Layer rules and command pattern | Implementer (api/, worker/) |
+| `docs/backend/testing/test-structure.md` | Three test tiers and layout rules | Implementer (api/, worker/) |
+| `docs/backend/testing/test-doubles.md` | doublex stub conventions | Implementer (api/, worker/) |
+| `docs/frontend/code-style.md` | TypeScript/React conventions | Implementer (frontend/) |
+| `docs/infra/conventions.md` | Terraform naming and module structure | Implementer (infra/) |
+| `scripts/local-setup.sh` | First-time dev environment setup | Developer |
+| `Makefile` | Root-level orchestration of all modules | Developer |
 
 ## Non-negotiable rules
 

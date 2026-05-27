@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+echo "Running pre-push checks..."
+
+if [ -d "api/tests/integration" ] && [ -f "api/Makefile" ]; then
+    echo "→ api/ integration + acceptance"
+    cd api && make test-integration && make test-acceptance && cd ..
+fi
+
+if [ -d "worker/tests/integration" ] && [ -f "worker/Makefile" ]; then
+    echo "→ worker/ integration + acceptance"
+    cd worker && make test-integration && make test-acceptance && cd ..
+fi
+
+echo "Pre-push passed."

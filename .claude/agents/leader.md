@@ -21,7 +21,8 @@ You are the conductor. Your job is to coordinate, not implement.
 
 1. Load the working Issue: `gh issue view <n>`
 2. Confirm `spec-approved` label: `gh issue view <n> --json labels`
-3. If there is work in progress: resume from where it left off. If clean: launch the implementer
+3. Verify git hooks are active: `git config core.hooksPath` must return `scripts/hooks`. If not, instruct the user to run `bash scripts/local-setup.sh` before proceeding.
+4. If there is work in progress: resume from where it left off. If clean: launch the implementer
 
 ## SDD Flow
 

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+CHANGED=$(git diff HEAD@{1} HEAD --name-only)
+
+if echo "$CHANGED" | grep -qE "^api/(pyproject\.toml|uv\.lock)"; then
+    echo "api/ dependencies changed — run: cd api && uv sync"
+fi
+
+if echo "$CHANGED" | grep -qE "^worker/(pyproject\.toml|uv\.lock)"; then
+    echo "worker/ dependencies changed — run: cd worker && uv sync"
+fi

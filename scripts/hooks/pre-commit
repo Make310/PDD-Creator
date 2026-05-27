@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+echo "Running pre-commit checks..."
+
+# Detect which modules have staged changes
+CHANGED=$(git diff --cached --name-only)
+
+if echo "$CHANGED" | grep -q "^api/" && [ -f "api/Makefile" ]; then
+    echo "→ api/"
+    cd api && make checks && make test-unit && cd ..
+fi
+
+if echo "$CHANGED" | grep -q "^worker/" && [ -f "worker/Makefile" ]; then
+    echo "→ worker/"
+    cd worker && make checks && make test-unit && cd ..
+fi
+
+echo "Pre-commit passed."
