@@ -1,0 +1,31 @@
+:root {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.5;
+  color: #213547;
+  background-color: #ffffff;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 720px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+}
+
+[data-status='ok'] {
+  color: #15803d;
+}
+
+[data-status='error'] {
+  color: #b91c1c;
+}
+
+[data-status='loading'] {
+  color: #6b7280;
+}

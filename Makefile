@@ -21,6 +21,7 @@ logs:
 checks:
 	@[ -f api/Makefile ] && (cd api && make checks) || echo "api/ not scaffolded yet"
 	@[ -f worker/Makefile ] && (cd worker && make checks) || echo "worker/ not scaffolded yet"
+	@[ -f frontend/Makefile ] && (cd frontend && make checks) || echo "frontend/ not scaffolded yet"
 
 test-unit:
 	@[ -f api/Makefile ] && (cd api && make test-unit) || echo "api/ not scaffolded yet"
@@ -37,3 +38,4 @@ test-acceptance:
 test:
 	@[ -f api/Makefile ] && (cd api && make test) || echo "api/ not scaffolded yet"
 	@[ -f worker/Makefile ] && (cd worker && make test) || echo "worker/ not scaffolded yet"
+	@[ -f frontend/Makefile ] && (cd frontend && make test) || echo "frontend/ not scaffolded yet"

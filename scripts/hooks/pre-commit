@@ -16,4 +16,9 @@ if echo "$CHANGED" | grep -q "^worker/" && [ -f "worker/Makefile" ]; then
     cd worker && make checks && make test-unit && cd ..
 fi
 
+if echo "$CHANGED" | grep -q "^frontend/" && [ -f "frontend/Makefile" ]; then
+    echo "→ frontend/"
+    cd frontend && make checks && make test && cd ..
+fi
+
 echo "Pre-commit passed."

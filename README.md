@@ -6,8 +6,8 @@ Converts RPA process transcripts into structured Process Design Documents (PDD) 
 
 ```bash
 make setup       # git hooks
-make up          # full stack in Docker: MongoDB + Redis + api (http://localhost:8000)
-make infra-up    # only MongoDB + Redis, to run modules natively (cd api && make dev)
+make up          # full stack in Docker: MongoDB + Redis + api (:8000) + frontend (http://localhost:3000)
+make infra-up    # only MongoDB + Redis, to run modules natively (cd api && make dev / cd frontend && make dev)
 make down        # stop everything
 ```
 
