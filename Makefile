@@ -1,7 +1,22 @@
-.PHONY: setup checks test test-unit test-integration test-acceptance
+.PHONY: setup checks test test-unit test-integration test-acceptance infra-up infra-down up down logs
 
 setup:
 	bash scripts/local-setup.sh
+
+infra-up:
+	docker compose up -d mongodb redis
+
+infra-down:
+	docker compose stop mongodb redis
+
+up:
+	docker compose up -d --build
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
 
 checks:
 	@[ -f api/Makefile ] && (cd api && make checks) || echo "api/ not scaffolded yet"

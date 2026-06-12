@@ -1,9 +1,20 @@
 # Infrastructure Conventions
 
 > **Status: cloud provider not selected yet.** Azure was discarded; the replacement target is an open decision.
-> Until it is made, the only supported environment is local development: MongoDB and Redis via Docker Compose,
-> `api/` and `worker/` running locally. The conventions below apply once a provider is chosen — they are
-> provider-agnostic on purpose.
+> Until it is made, the only supported environment is local development via `docker-compose.yml` at the repo root.
+> The conventions below apply once a provider is chosen — they are provider-agnostic on purpose.
+
+## Local development
+
+```bash
+make infra-up    # MongoDB + Redis in Docker (api/worker run natively: cd api && make dev)
+make up          # full stack in Docker (mongodb + redis + api)
+make down        # stop everything
+make logs        # follow container logs
+```
+
+All services have healthchecks; `api` waits for MongoDB and Redis to be healthy before starting.
+MongoDB data persists in the `mongo_data` named volume.
 
 ## Convention
 

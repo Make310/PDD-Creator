@@ -2,6 +2,15 @@
 
 Converts RPA process transcripts into structured Process Design Documents (PDD) using AI.
 
+## Quick start
+
+```bash
+make setup       # git hooks
+make up          # full stack in Docker: MongoDB + Redis + api (http://localhost:8000)
+make infra-up    # only MongoDB + Redis, to run modules natively (cd api && make dev)
+make down        # stop everything
+```
+
 ## Project structure
 
 | Folder | Purpose |
