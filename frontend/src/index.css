@@ -1,31 +1,23 @@
-:root {
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  line-height: 1.5;
-  color: #213547;
-  background-color: #ffffff;
-}
+@import 'tailwindcss';
 
-body {
-  margin: 0;
-}
+/* Company brand tokens — the ONLY brand colors allowed in components
+   (see docs/frontend/code-style.md). */
+@theme {
+  --font-sans: 'Poppins', system-ui, sans-serif;
 
-main {
-  max-width: 720px;
-  margin: 4rem auto;
-  padding: 0 1rem;
-}
+  /* Brand */
+  --color-company-yellow: #ffcc29; /* primary / accent */
+  --color-company-black: #000000; /* secondary, headings */
+  --color-company-blue: #003c78; /* corporate dark blue */
+  --color-company-cyan: #14b1e7; /* informational accent */
 
-[data-status='ok'] {
-  color: #15803d;
-}
-
-[data-status='error'] {
-  color: #b91c1c;
-}
-
-[data-status='loading'] {
-  color: #6b7280;
+  /* Neutral scale */
+  --color-company-gray-50: #f9f9f9;
+  --color-company-gray-100: #f6f6f6;
+  --color-company-gray-200: #eeeeee;
+  --color-company-gray-300: #e0e0e0;
+  --color-company-gray-400: #bdbdbd;
+  --color-company-gray-600: #616161; /* body text */
+  --color-company-gray-700: #545454;
+  --color-company-gray-900: #212121;
 }

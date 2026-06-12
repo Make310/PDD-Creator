@@ -26,7 +26,7 @@ You implement one feature per session. You follow the acceptance criteria of the
 | Module | Docs to read |
 |--------|-------------|
 | `api/` or `worker/` | `docs/backend/code-style.md`, `docs/backend/clean-architecture.md`, `docs/backend/testing/test-structure.md`, `docs/backend/testing/test-doubles.md`, `docs/database.md` |
-| `frontend/` | `docs/frontend/code-style.md` |
+| `frontend/` | `docs/frontend/code-style.md`, `docs/frontend/architecture.md`, `docs/frontend/testing.md` |
 | `infra/` | `docs/infra/conventions.md` |
 
 6. Create the development branch: `git checkout -b feat/issue-<n>`

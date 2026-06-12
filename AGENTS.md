@@ -54,7 +54,9 @@ Examples:
 | `docs/backend/clean-architecture.md` | Layer rules and command pattern | Implementer (api/, worker/) |
 | `docs/backend/testing/test-structure.md` | Three test tiers and layout rules | Implementer (api/, worker/) |
 | `docs/backend/testing/test-doubles.md` | doublex stub conventions | Implementer (api/, worker/) |
-| `docs/frontend/code-style.md` | TypeScript/React conventions | Implementer (frontend/) |
+| `docs/frontend/code-style.md` | TypeScript/React conventions, Tailwind + brand tokens | Implementer (frontend/) |
+| `docs/frontend/architecture.md` | SPA layers: components → hooks → services | Implementer (frontend/) |
+| `docs/frontend/testing.md` | Vitest + Testing Library strategy and rules | Implementer (frontend/) |
 | `docs/infra/conventions.md` | Terraform naming and module structure | Implementer (infra/) |
 | `scripts/local-setup.sh` | First-time dev environment setup | Developer |
 | `Makefile` | Root-level orchestration of all modules | Developer |

@@ -3,27 +3,13 @@
 ## Toolchain
 
 - **Stack:** Vite + React + TypeScript, Node 24, npm
+- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite` plugin) — see the Styling section below
 - **Lint:** ESLint (flat config, `eslint.config.js`) with `typescript-eslint`, `react-hooks` and `eslint-config-prettier`
-- **Format:** Prettier (`.prettierrc` — no semicolons, single quotes)
-- **Tests:** Vitest + Testing Library (`jsdom` environment)
+- **Format:** Prettier (`.prettierrc` — no semicolons, single quotes) + `prettier-plugin-tailwindcss` (sorts class names automatically)
+- **Tests:** Vitest + Testing Library — see [testing.md](testing.md)
 - **Commands:** `make checks` (lint + format + types), `make test`, `make dev`, `make build` — same target names as the backend modules
 
-## Structure
-
-```
-frontend/src/
-├── components/   # PascalCase.tsx — one component per file
-├── hooks/        # useX.ts — stateful logic, calls services
-├── services/     # API access — the only place fetch() is allowed
-├── App.tsx
-└── main.tsx
-```
-
-Tests live in `frontend/tests/` mirroring `src/` (`tests/components/`, `tests/hooks/`, `tests/services/`).
-Mock services with `vi.mock()` in component tests; stub `fetch` with `vi.stubGlobal()` in service tests.
-
-In development, Vite proxies `/api` to `http://localhost:8000` (see `vite.config.ts`); in Docker,
-nginx proxies `/api/` to the `api` container. Code always calls relative `/api/v1/...` paths.
+For folder structure and layer rules see [architecture.md](architecture.md).
 
 ## Convention
 
@@ -66,6 +52,34 @@ useEffect(() => {
 
 **No console.log** in production code — use a structured logger or remove before commit.
 
+## Styling — Tailwind + company brand
+
+All styling is done with **Tailwind utility classes**. Rules:
+
+1. **No inline `style=`** and **no new CSS files** — the only stylesheet is `src/index.css`, which holds
+   the Tailwind import and the brand tokens (`@theme`). If a style can't be expressed with utilities,
+   discuss it before adding custom CSS.
+2. **Brand colors only through tokens.** Never hardcode hex values in components — use the
+   `company-*` classes generated from `@theme`:
+
+   | Token | Hex | Use for |
+   |-------|-----|---------|
+   | `company-yellow` | `#ffcc29` | Primary actions, accents, highlights (brand primary) |
+   | `company-black` | `#000000` | Headings, primary text |
+   | `company-blue` | `#003c78` | Corporate accents, links, emphasis on light backgrounds |
+   | `company-cyan` | `#14b1e7` | Informational accents |
+   | `company-gray-600` | `#616161` | Body text |
+   | `company-gray-50..900` | neutral scale | Backgrounds, borders, muted text |
+
+   Example: `bg-company-yellow text-company-black`, `text-company-gray-600`, `border-company-yellow`.
+3. **Functional colors stay functional.** Success/error/warning states use Tailwind's semantic
+   defaults (`green-*`, `red-*`, `amber-*`) — don't repurpose brand colors to signal state.
+4. **Typography is Poppins** (`font-sans` is already mapped to it). Loaded via Google Fonts in `index.html`.
+5. **Class order is enforced** by `prettier-plugin-tailwindcss` — run `make format` and don't fight it.
+6. Reusable visual patterns belong in a **component**, not in copy-pasted class strings or `@apply`.
+
 ## Related
 
+- [architecture.md](architecture.md)
+- [testing.md](testing.md)
 - [../architecture.md](../architecture.md)
