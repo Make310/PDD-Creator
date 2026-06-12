@@ -10,7 +10,7 @@ Use `doublex` with `Mimic(Stub, ConcreteClass)` for all unit test stubs. Never u
 from doublex import Mimic, Stub
 from expects import equal, expect
 
-with Mimic(Stub, ServiceBusPDDJobPublisher) as publisher:
+with Mimic(Stub, RedisPDDJobPublisher) as publisher:
     publisher.publish(job).returns(None)
 
 handler = GeneratePDDCommandHandler(publisher)  # type: ignore
@@ -22,7 +22,7 @@ expect(response.message()).to(equal(expected_job_id))
 ## Stub raising an exception
 
 ```python
-with Mimic(Stub, ServiceBusPDDJobPublisher) as publisher:
+with Mimic(Stub, RedisPDDJobPublisher) as publisher:
     publisher.publish(job).raises(PDDJobPublisherException("timeout"))
 
 expect(lambda: handler.execute(command)).to(raise_error(GeneratePDDCommandHandlerException))

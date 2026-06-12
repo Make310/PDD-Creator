@@ -7,8 +7,8 @@ Tests are split into three independent tiers. Each tier has a specific scope, sp
 | Tier | Location | Scope | External services | When it runs |
 |------|----------|-------|-------------------|--------------|
 | **Unit** | `tests/unit/` | `CommandHandler` logic in isolation | None — all dependencies stubbed with doublex | Pre-commit |
-| **Integration** | `tests/integration/` | Infrastructure adapters against real services | Real (MongoDB, Service Bus, OpenAI) | Pre-push |
-| **Acceptance** | `tests/acceptance/` | HTTP endpoints or Function triggers end-to-end | None — FastAPI `TestClient` or local function runtime | Pre-push |
+| **Integration** | `tests/integration/` | Infrastructure adapters against real services | Real (MongoDB, Redis, Claude API) | Pre-push |
+| **Acceptance** | `tests/acceptance/` | HTTP endpoints or worker consumers end-to-end | None — FastAPI `TestClient` or invoking the consumer with stubbed adapters | Pre-push |
 
 ## Layout
 
@@ -18,8 +18,8 @@ Test files mirror the `src/` structure exactly:
 src/use_cases/generate_pdd_command.py
   → tests/unit/use_cases/test_generate_pdd_command.py
 
-src/infrastructure/service_bus/pdd_job_publisher.py
-  → tests/integration/service_bus/test_pdd_job_publisher.py
+src/infrastructure/queue/pdd_job_publisher.py
+  → tests/integration/queue/test_pdd_job_publisher.py
 
 src/delivery/api/v1/pdd/pdd_router.py
   → tests/acceptance/delivery/api/test_pdd_controller.py
@@ -31,7 +31,7 @@ src/delivery/api/v1/pdd/pdd_router.py
 class TestGeneratePDDCommandHandler:
     def test_execute_returns_job_id(self) -> None:
         command = GeneratePDDCommand(transcript="text", requested_by="user@example.com")
-        with Mimic(Stub, ServiceBusPDDJobPublisher) as publisher:
+        with Mimic(Stub, RedisPDDJobPublisher) as publisher:
             publisher.publish(command).returns(None)
 
         handler = GeneratePDDCommandHandler(publisher)  # type: ignore

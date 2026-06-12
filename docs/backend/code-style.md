@@ -49,7 +49,7 @@ raise Exception("something failed")
 
 - Consistent code across modules and contributors
 - Type errors caught before runtime
-- Structured logs searchable in Azure Monitor
+- Structured logs searchable in the log aggregator (decided with the deployment target)
 
 ## Running checks
 

@@ -15,7 +15,7 @@ delivery/ → use_cases/ → domain/ ← infrastructure/
 | `domain/` | Ports (ABCs), exceptions, `Command`/`CommandHandler`/`CommandResponse` base | Zero framework imports |
 | `use_cases/` | One `CommandHandler` per operation. Orchestrates domain via injected interfaces | No concrete implementations |
 | `infrastructure/` | Concrete implementations of domain interfaces | Framework and library aware |
-| `delivery/` | Entry points (FastAPI routers, Azure Function triggers). Translates input → Command → response | No business logic |
+| `delivery/` | Entry points (FastAPI routers, worker queue consumers). Translates input → Command → response | No business logic |
 | `common/` | `logger`, `settings` | Accessible from all layers |
 
 ## Command pattern
@@ -46,7 +46,7 @@ class GeneratePDDCommandResponse(CommandResponse):
 
 ## Dependency injection
 
-FastAPI `Depends` (in routers) and manual wiring (in Azure Function triggers) are the **only places** where abstract meets concrete.
+FastAPI `Depends` (in routers) and manual wiring (in the worker's queue consumer) are the **only places** where abstract meets concrete.
 
 ```python
 # ✅ delivery layer wires the dependency
@@ -58,7 +58,7 @@ async def generate_pdd_command_handler(
 # ❌ handler instantiates its own dependency
 class GeneratePDDCommandHandler(CommandHandler):
     def __init__(self) -> None:
-        self._publisher = ServiceBusPDDJobPublisher()  # wrong
+        self._publisher = RedisPDDJobPublisher()  # wrong
 ```
 
 ## Module boundaries
