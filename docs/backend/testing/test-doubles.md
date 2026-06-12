@@ -28,6 +28,17 @@ with Mimic(Stub, RedisPDDJobPublisher) as publisher:
 expect(lambda: handler.execute(command)).to(raise_error(GeneratePDDCommandHandlerException))
 ```
 
+## Stub with ANY_ARG
+
+When the argument doesn't matter — e.g. stubbing a whole handler for a controller error-path test:
+
+```python
+from doublex import ANY_ARG, Mimic, Stub
+
+with Mimic(Stub, GeneratePDDCommandHandler) as handler:
+    handler.execute(ANY_ARG).raises(GeneratePDDCommandHandlerException("boom"))
+```
+
 ## Rules
 
 - Use `Mimic(Stub, ConcreteClass)` — the stub conforms to the real interface; type mismatches are caught at creation time

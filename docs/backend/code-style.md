@@ -1,5 +1,12 @@
 # Code Style
 
+## Toolchain
+
+- **Python:** 3.12.8, pinned per module with `uv` (`.python-version` + `requires-python`)
+- **Dependencies:** managed with `uv` — `make install`, `make add-package package=X`, `make add-dev-package package=X`
+- **Lint + format:** `ruff` — config lives in `<module>/ruff.toml`
+- **Type checker:** `ty`
+
 ## Convention
 
 All Python code follows these rules, enforced by `ruff` and `ty`.
@@ -60,5 +67,5 @@ make format    # auto-fix formatting
 
 ## Related
 
-- [clean-architecture.md](backend/clean-architecture.md)
+- [clean-architecture.md](clean-architecture.md)
 - [test-structure.md](testing/test-structure.md)

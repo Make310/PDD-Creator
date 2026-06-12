@@ -18,6 +18,14 @@ delivery/ → use_cases/ → domain/ ← infrastructure/
 | `delivery/` | Entry points (FastAPI routers, worker queue consumers). Translates input → Command → response | No business logic |
 | `common/` | `logger`, `settings` | Accessible from all layers |
 
+## Composition root
+
+`main.py` at the module root builds the FastAPI app (lifespan, settings, routers). Each delivery
+feature lives in `src/delivery/api/v1/<feature>/` with two files:
+
+- `<feature>_router.py` — `APIRouter` + DI wiring
+- `<feature>_response.py` — Pydantic response model (response models belong to delivery, never to domain)
+
 ## Command pattern
 
 Every operation follows the same structure:
@@ -31,7 +39,9 @@ class GeneratePDDCommand(Command):
         super().__init__()  # assigns command_id for log correlation
 
 # 2. CommandHandler — business logic
-class GeneratePDDCommandHandler(CommandHandler):
+# The base is generic (PEP 695): CommandHandler[C: Command, R: CommandResponse].
+# Parametrize it so narrowing the command type does not violate Liskov.
+class GeneratePDDCommandHandler(CommandHandler[GeneratePDDCommand, GeneratePDDCommandResponse]):
     def __init__(self, publisher: PDDJobPublisher) -> None:
         self._publisher = publisher  # injected interface, not concrete class
 
@@ -52,13 +62,19 @@ FastAPI `Depends` (in routers) and manual wiring (in the worker's queue consumer
 # ✅ delivery layer wires the dependency
 async def generate_pdd_command_handler(
     publisher: PDDJobPublisher = Depends(pdd_job_publisher),
-) -> CommandHandler:
+) -> GeneratePDDCommandHandler:
     return GeneratePDDCommandHandler(publisher)
 
 # ❌ handler instantiates its own dependency
-class GeneratePDDCommandHandler(CommandHandler):
+class GeneratePDDCommandHandler(CommandHandler[GeneratePDDCommand, GeneratePDDCommandResponse]):
     def __init__(self) -> None:
         self._publisher = RedisPDDJobPublisher()  # wrong
+```
+
+In tests, swap the wiring without touching the app:
+
+```python
+app.dependency_overrides[generate_pdd_command_handler] = stubbed_handler_provider
 ```
 
 ## Module boundaries
@@ -73,5 +89,5 @@ See [architecture.md](../architecture.md) for inter-module rules (`api/` vs `wor
 
 ## Related
 
-- [code-style.md](../code-style.md)
-- [test-structure.md](../testing/test-structure.md)
+- [code-style.md](code-style.md)
+- [test-structure.md](testing/test-structure.md)

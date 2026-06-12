@@ -49,6 +49,30 @@ make test-acceptance    # requires app running or TestClient
 make test               # all three tiers
 ```
 
+## Acceptance error-path example
+
+Error paths don't need real failures — override the DI provider with a stubbed handler via
+`app.dependency_overrides`. No external service is involved, so it stays in the acceptance tier:
+
+```python
+class TestGeneratePDDControllerErrors:
+    ERROR_MESSAGE = "any error message"
+
+    def _failing_handler(self) -> GeneratePDDCommandHandler:
+        with Mimic(Stub, GeneratePDDCommandHandler) as handler:
+            handler.execute(ANY_ARG).raises(GeneratePDDCommandHandlerException(self.ERROR_MESSAGE))
+        return handler  # type: ignore
+
+    def test_returns_bad_request(self) -> None:
+        client = TestClient(app)
+        app.dependency_overrides[generate_pdd_command_handler] = self._failing_handler
+
+        response = client.post(f"{settings.api_v1_prefix}/pdd", json={"transcript": "..."})
+
+        expect(response.status_code).to(equal(BAD_REQUEST))
+        expect(response.json()).to(equal({"detail": self.ERROR_MESSAGE}))
+```
+
 ## Anti-patterns
 
 - ❌ Unit test calling a real database or HTTP endpoint — move to integration
@@ -58,4 +82,4 @@ make test               # all three tiers
 ## Related
 
 - [test-doubles.md](test-doubles.md)
-- [clean-architecture.md](../backend/clean-architecture.md)
+- [clean-architecture.md](../clean-architecture.md)
