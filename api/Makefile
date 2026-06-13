@@ -31,6 +31,10 @@ run: ## Run the app in production mode
 dev: ## Run the app in development mode
 	uv run fastapi dev
 
+.PHONY: create-admin
+create-admin: ## Create the first admin user. ex: make create-admin email=admin@x.com name="Admin" (password prompted or via ADMIN_PASSWORD)
+	uv run python -m src.delivery.cli.create_admin --email "$(email)" --name "$(name)"
+
 .PHONY: build
 build: ## Build the docker image
 	docker build -t pdd-creator-api .

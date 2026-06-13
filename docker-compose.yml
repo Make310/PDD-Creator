@@ -27,6 +27,9 @@ services:
     build: ./api
     ports:
       - "8000:8000"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:-dev-only-secret-change-me-in-production-0000}
     depends_on:
       mongodb:
         condition: service_healthy
