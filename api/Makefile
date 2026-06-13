@@ -31,6 +31,14 @@ run: ## Run the app in production mode
 dev: ## Run the app in development mode
 	uv run fastapi dev
 
+.PHONY: create-admin
+create-admin: ## Create the first admin (host mongo). ex: make create-admin email=admin@x.com name="Admin" (password prompted or via ADMIN_PASSWORD)
+	uv run python -m src.delivery.cli.create_admin --email "$(email)" --name "$(name)"
+
+.PHONY: create-admin-docker
+create-admin-docker: ## Create the first admin inside the running API container (compose mongo). ex: make create-admin-docker email=admin@x.com name="Admin" (password prompted or via ADMIN_PASSWORD)
+	docker compose -f ../docker-compose.yml exec $(if $(ADMIN_PASSWORD),-e ADMIN_PASSWORD,-it) api python -m src.delivery.cli.create_admin --email "$(email)" --name "$(name)"
+
 .PHONY: build
 build: ## Build the docker image
 	docker build -t pdd-creator-api .
