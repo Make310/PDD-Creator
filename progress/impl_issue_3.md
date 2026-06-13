@@ -180,3 +180,65 @@ make checks   → eslint OK, prettier OK, tsc -b OK
 make test     → 5 files, 21 passed (4 new auth/storage cases + existing health)
 npm run build → tsc -b + vite build OK (built in ~0.5s)
 ```
+
+---
+
+## Retry — Round 2 (feedback_issue_3.md, two changes)
+
+**Date:** 2026-06-12
+**Source:** `progress/feedback_issue_3.md` — PR #4 denied (round 2). Applied exactly the two
+listed changes; nothing else touched. Auth/login/me endpoints, `create_admin.py` CLI behavior
+and the api CI workflow were left untouched.
+
+### Change 1 — Login is the primary landing view, scaffold removed (frontend)
+
+- `frontend/src/App.tsx` — now renders only the `AuthPanel`, centered as the focused primary
+  content (`min-h-screen` flex container, `max-w-md`). Removed the boilerplate scaffold (the
+  "PDD Creator" heading + "Convert RPA process transcripts…" paragraph) and the
+  `HealthIndicator` "API active" block. `AuthPanel` already shows the login form when
+  unauthenticated and the user profile + logout when authenticated.
+- Deleted (became unused dead code; no remaining imports):
+  `frontend/src/components/HealthIndicator.tsx`, `frontend/src/hooks/useHealth.ts`,
+  `frontend/src/services/healthService.ts`, plus their tests
+  `frontend/tests/components/HealthIndicator.test.tsx`,
+  `frontend/tests/services/healthService.test.ts`.
+- `frontend/tests/App.test.tsx` (new) — asserts: unauthenticated opens on the login experience
+  (Sign in button), the boilerplate scaffold paragraph and the API online/offline indicator are
+  absent, and authenticated renders profile (email/name/role) + Log out.
+
+Acceptance (change 1):
+- [x] Unauthenticated landing is the login form as primary, focused content
+- [x] Boilerplate scaffold message + `HealthIndicator` removed from the home
+- [x] Authenticated shows profile + logout (unchanged AuthPanel behavior)
+- [x] No dead code / unused imports (health files deleted)
+- [x] `App` + tests updated; `make checks`, `make test`, `npm run build` green
+
+### Change 2 — Admin creation targets the running dockerized stack (api + docs)
+
+- `api/Makefile` — new `create-admin-docker` target running the CLI **inside the running API
+  container**: `docker compose -f ../docker-compose.yml exec ... api python -m
+  src.delivery.cli.create_admin --email ... --name ...`. Password is never a CLI arg: when
+  `ADMIN_PASSWORD` is set it is forwarded into the container with `-e ADMIN_PASSWORD` (value
+  from the host env, not the command line); when unset, `-it` allocates a TTY so the existing
+  `getpass` prompt works. The original `make create-admin` (host mongo) is unchanged except its
+  help text now says "host mongo".
+- `api/README.md` — new "Creating the first admin" section documenting both paths in a table,
+  making explicit which DB each writes to: `make create-admin` → host mongo
+  (`mongodb://localhost:27017` for your shell), `make create-admin-docker` → compose mongo
+  (`mongodb://mongodb:27017`, the DB the dockerized API reads). This is the durable fix for the
+  DB-mismatch 401 the user hit.
+
+Acceptance (change 2):
+- [x] `create-admin-docker` make target runs the CLI inside the running API container
+- [x] Password via `ADMIN_PASSWORD`/prompt, never as a CLI arg
+- [x] README documents host vs docker-compose creation and which DB each writes to
+- [x] Auth logic, login/me endpoints, `create_admin.py` CLI and api CI workflow untouched
+
+### Test results (round 2)
+
+```
+frontend: make checks → eslint/prettier/tsc OK; make test → 4 files, 20 passed;
+          npm run build → tsc -b + vite build OK
+api:      make checks → ruff lint/format + ty OK; make test → unit + 3 integration +
+          9 acceptance all passed
+```
