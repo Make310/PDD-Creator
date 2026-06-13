@@ -2,14 +2,22 @@
 
 **Last updated:** 2026-06-12
 **Active issue:** #3 — [SPEC] User authentication with login
-**State:** PR #4 DENIED by user → CHANGES_REQUESTED cycle in progress (PR #4 still open,
-new commits to `feat/issue-3` update it). https://github.com/Make310/PDD-Creator/pull/4
+**State:** PR #4 DENIED by user — round 2 (PR #4 still open; new commits update it).
+https://github.com/Make310/PDD-Creator/pull/4
 
-## Denial reasons (see progress/feedback_issue_3.md)
+## Round 2 denial reasons (see progress/feedback_issue_3.md)
 
-1. Frontend login UI was never developed → relaunching implementer for `frontend/` auth.
-2. `api — checks and tests` red: integration tier needs MongoDB, workflow had no service.
-   → Leader added a `mongo:7` service to `.github/workflows/api.yml` (config, no code change).
+1. Login "didn't work" with admin@test.com/123456 → **diagnosed: DB mismatch, not a code bug.**
+   A stray host `mongod` on :27017 meant `make create-admin` (host) wrote to a different DB
+   than the dockerized API reads (compose mongo). Leader created the admin inside the API
+   container → login verified 200 w/ token. Durable fix queued: compose-aware create-admin + docs.
+2. Initial view still shows the boilerplate scaffold (HealthIndicator "API active") instead of
+   opening on login → frontend must make login the primary landing view.
+
+## Round 1 (resolved, on branch)
+
+- Frontend login UI built (commit ae64269). CI mongo service added (commit 5ad1bab). Both
+  workflows green. Reviewer APPROVED round 1.
 
 ## Next step
 
