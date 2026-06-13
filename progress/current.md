@@ -14,10 +14,24 @@ https://github.com/Make310/PDD-Creator/pull/4
 2. Initial view still shows the boilerplate scaffold (HealthIndicator "API active") instead of
    opening on login → frontend must make login the primary landing view.
 
+## Round 2 — resolved
+
+- Login is now the primary landing view; boilerplate scaffold + HealthIndicator removed
+  (commit 035e7cf). `create-admin-docker` target + README documenting host vs compose DB
+  (commit 58967b2). Reviewer APPROVED. Both CI workflows green on PR #4
+  (runs 27453968966 / 27453969038).
+- Leader verified end to end: admin created in the compose mongo, `POST /api/v1/auth/login`
+  returns 200 with a token.
+
 ## Round 1 (resolved, on branch)
 
 - Frontend login UI built (commit ae64269). CI mongo service added (commit 5ad1bab). Both
   workflows green. Reviewer APPROVED round 1.
+
+## Next step
+
+**Waiting for user to merge PR #4.** On merge → `gh issue close 3 --comment "Implemented in
+PR #4"`, append to history.md, clear current.md.
 
 ## Next step
 

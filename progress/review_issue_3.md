@@ -1,39 +1,49 @@
-# Review — Issue #3 (retry: Required change 1, frontend login)
+# Review — Issue #3 (round 2 retry)
 
 **Date:** 2026-06-12
 **Reviewer verdict:** APPROVED
-**Scope:** Required change 1 only (frontend auth UI). Required change 2 (CI mongo service)
-handled by the leader and out of scope for this review.
 
-## Acceptance criteria (from feedback_issue_3.md, Required change 1)
+Scope: verify ONLY the two round-2 required changes from `progress/feedback_issue_3.md`.
 
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| Login form: email + password with client-side validation (missing + malformed) | OK | `src/components/LoginForm.tsx` + `src/hooks/useLogin.ts` `validate()` with `EMAIL_PATTERN`; per-field errors rendered. No service call when invalid. |
-| Auth service `POST /api/v1/auth/login` mapping `{access_token, token_type, expires_in}` | OK | `src/services/authService.ts` `login()` posts JSON to relative `/api/v1/auth/login` (nginx/vite proxy) and maps to `{accessToken, expiresIn}`. |
-| Token persisted, sent as `Authorization: Bearer`, expiration honored; expired/absent → login | OK | `src/services/tokenStorage.ts` stores absolute `expiresAt`, `readToken()` returns null + clears on absent/expired/corrupted. `fetchProfile()` sends bearer header. `useAuth` restores on mount and drops session on `/me` failure. |
-| Generic message on 401, no user enumeration | OK | `login()` throws `InvalidCredentialsError` on 401; `useLogin` shows single "Invalid credentials" form-level `role="alert"`. No field-specific leak. |
-| Authenticated view calls `GET /api/v1/auth/me`, renders email/name/role | OK | `useAuth.loadProfile` -> `fetchProfile`; `src/components/UserProfileCard.tsx` renders name, email, role. |
-| Logout clears token, returns to login | OK | `useAuth.logout` clears token + resets status; `AuthPanel` maps `unauthenticated` -> `LoginForm`. |
-| Tests: success login, generic error, missing-field validation, authenticated view shows /me | OK | `tests/components/AuthPanel.test.tsx` (7 tests incl. malformed email, session restore, logout), `tests/services/authService.test.ts` (5), `tests/services/tokenStorage.test.ts` (5). |
+## Change 1 — Login is the primary landing view, scaffold removed (frontend)
 
-## Architecture / style compliance
+- [x] `frontend/src/App.tsx` renders only `AuthPanel`, centered as the focused primary
+      content (`min-h-screen` flex, `max-w-md`). No marketing heading, no
+      "Convert RPA process transcripts…" paragraph, no `HealthIndicator`.
+- [x] Unauthenticated → login form (`AuthPanel` maps `unauthenticated` → `LoginForm`).
+- [x] Authenticated → `UserProfileCard` (email, name, role) + Log out.
+- [x] No dead code / unused imports: `HealthIndicator.tsx`, `useHealth.ts`,
+      `healthService.ts` and their tests deleted. `grep` over `src`/`tests` finds no
+      references except a test description string in `App.test.tsx` (not code).
+- [x] `frontend/tests/App.test.tsx` added: asserts login is the landing view, the
+      scaffold paragraph and API online/offline indicator are absent, and authenticated
+      shows profile + logout.
 
-- Layering respected: only `services/` call `fetch`; hooks consume services; components consume hooks. (docs/frontend/architecture.md)
-- No `any`, explicit types and prop interfaces; no inline styles; brand `company-*` tokens only (all referenced tokens exist in `src/index.css`). (docs/frontend/code-style.md)
-- Tests mock at the service boundary, assert visible behavior via roles/labels, use `findBy*` for async; `tests/setup.ts` runs `cleanup()`. (docs/frontend/testing.md)
-- No unused exports/imports or dead code (ESLint clean; `Credentials`, `LoginResult`, `UserProfile`, `UnauthorizedError` all consumed). No new dependencies added.
+## Change 2 — Admin creation targets the running dockerized stack (api + docs)
 
-## Verification results (frontend/)
+- [x] `api/Makefile` adds `create-admin-docker` running the CLI inside the running API
+      container via `docker compose exec`. Password is never a CLI arg: `-e ADMIN_PASSWORD`
+      when set, else `-it` for the existing `getpass` prompt.
+- [x] `api/README.md` "Creating the first admin" section documents both paths in a table
+      and which DB each writes to (host mongo vs compose `mongodb://mongodb:27017`),
+      addressing the DB-mismatch 401 the user hit.
+- [x] Round-2 commits (035e7cf, 58967b2) touched only frontend App/health files/tests and
+      `api/Makefile` + `api/README.md`. Auth logic, login/me endpoints,
+      `create_admin.py` CLI and `.github/workflows/api.yml` are unchanged.
 
-```
-make checks   -> eslint OK, prettier OK, tsc -b OK
-make test     -> 5 files, 21 passed (AuthPanel 7, authService 5, tokenStorage 5, + existing health)
-npm run build -> tsc -b + vite build OK (built in ~446ms)
-```
+## Verification runs
 
-## Verdict
+- frontend `make checks` → eslint + prettier + tsc OK
+- frontend `make test` → 4 files, 20 passed
+- frontend `npm run build` → tsc -b + vite build OK
+- api `make checks` → ruff lint + format + ty OK
+- api `make test` → unit 22, integration 3, acceptance 9 — all passed
 
-APPROVED — all Required change 1 acceptance criteria are covered, layering and style docs
-respected, no dead code or unused dependencies, and `make checks` / `make test` / `npm run build`
-are all green in `frontend/`.
+## Note (not blocking)
+
+The api `/health` endpoint and its unit/acceptance tests remain. This is correct: the
+feedback scoped health removal to the frontend landing only; the api health endpoint was
+never in the change list.
+
+**Verdict: APPROVED** — both round-2 changes implemented exactly, all suites green, no dead
+code or unused imports introduced.
