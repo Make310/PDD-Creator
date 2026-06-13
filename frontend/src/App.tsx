@@ -1,3 +1,4 @@
+import { AuthPanel } from './components/AuthPanel'
 import { HealthIndicator } from './components/HealthIndicator'
 
 export function App() {
@@ -11,6 +12,9 @@ export function App() {
       </p>
       <div className="mt-8">
         <HealthIndicator />
+      </div>
+      <div className="mt-8">
+        <AuthPanel />
       </div>
     </main>
   )

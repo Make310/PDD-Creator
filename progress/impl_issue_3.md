@@ -102,3 +102,81 @@ afterwards.
   (`tests/support.py::resolved`).
 - Out of scope per spec: registration/management endpoints, refresh tokens, password reset,
   email verification, SSO.
+
+---
+
+## Retry — Required change 1 (frontend login)
+
+**Date:** 2026-06-12
+**Source:** `progress/feedback_issue_3.md` — Required change 1 only. The api workflow and
+integration tests (Required change 2) were left untouched (handled by the leader).
+
+Module: `frontend/` (three-layer SPA: components → hooks → services). No new dependencies.
+API contract consumed via the `/api` proxy:
+`POST /api/v1/auth/login {email,password}` → `{access_token, token_type:"bearer", expires_in}`,
+`401 {detail:"Invalid credentials"}` on failure; `GET /api/v1/auth/me` with
+`Authorization: Bearer <token>` → `{email,name,role}`.
+
+### Modified / added files
+
+- `frontend/src/services/authService.ts` — `login()` (POST /auth/login, maps snake_case
+  response to `{accessToken, expiresIn}`, throws `InvalidCredentialsError` on 401) and
+  `fetchProfile(token)` (GET /auth/me with bearer header, throws `UnauthorizedError` on 401).
+  Only layer that calls `fetch`.
+- `frontend/src/services/tokenStorage.ts` — persists the token in `localStorage` with an
+  absolute `expiresAt` (now + `expiresIn`s). `readToken()` returns `null` and clears storage
+  when the token is absent, expired or corrupted (covers "expired token rejected" client-side).
+- `frontend/src/hooks/useAuth.ts` — session state machine (`loading`/`authenticated`/
+  `unauthenticated`). Restores the session from the stored token on mount, loads `/me`,
+  exposes `onAuthenticated` (persist + load) and `logout` (clear token → back to login).
+  Any `/me` failure drops the session.
+- `frontend/src/hooks/useLogin.ts` — login submission: client-side validation
+  (missing/malformed email, missing password), generic `Invalid credentials` message on 401,
+  no service call when validation fails.
+- `frontend/src/components/LoginForm.tsx` — accessible email+password form, per-field error
+  messages, generic form-level error (`role="alert"`), disabled state while submitting.
+- `frontend/src/components/UserProfileCard.tsx` — renders email, name, role + Log out button.
+- `frontend/src/components/AuthPanel.tsx` — composes `useAuth`, mapping each `AuthStatus` to a
+  view (loading / `LoginForm` / `UserProfileCard`).
+- `frontend/src/App.tsx` — mounts `AuthPanel` below the existing `HealthIndicator`.
+- `frontend/tests/setup.ts` (new) + `frontend/vite.config.ts` — registered `setupFiles` so
+  Testing Library `cleanup()` runs after each test (required now that multiple components
+  render per file).
+- Tests: `frontend/tests/services/authService.test.ts`,
+  `frontend/tests/services/tokenStorage.test.ts`,
+  `frontend/tests/components/AuthPanel.test.tsx`.
+
+### Acceptance criteria (Required change 1) covered
+
+- [x] Login form with email + password and client-side validation (missing + malformed)
+- [x] Auth service `POST /api/v1/auth/login` mapping `{access_token, token_type, expires_in}`
+- [x] Token persisted, sent as `Authorization: Bearer <token>`, expiration honoured
+      (expired/absent token → unauthenticated → login)
+- [x] Single generic message on 401 (`Invalid credentials`), no leak of which field failed
+- [x] Authenticated view calls `GET /api/v1/auth/me` and renders email, name, role
+- [x] Logout clears the token and returns to the login view
+- [x] Tests: successful login, generic error on bad credentials, missing-field validation,
+      authenticated view shows `/me` info (+ malformed email, session restore, logout)
+
+### Edge cases handled (frontend)
+
+- Malformed email and empty fields blocked before any network call
+- Expired/corrupted stored token treated as no session (`tokenStorage` clears it)
+- `/me` failure on a stale token drops the session back to login
+- Submit button disabled while the request is in flight
+
+### How to test manually (frontend)
+
+1. Start the stack (`make infra-up`, api `make dev`, frontend `make dev`).
+2. Open the app, submit the empty form → field validation errors, no request sent.
+3. Submit wrong credentials → single `Invalid credentials` message.
+4. Submit valid admin credentials → profile card with email, name, role.
+5. Click Log out → back to the login form; reloading stays logged out.
+
+### Test results (frontend)
+
+```
+make checks   → eslint OK, prettier OK, tsc -b OK
+make test     → 5 files, 21 passed (4 new auth/storage cases + existing health)
+npm run build → tsc -b + vite build OK (built in ~0.5s)
+```
