@@ -13,10 +13,17 @@ new commits to `feat/issue-3` update it). https://github.com/Make310/PDD-Creator
 
 ## Next step
 
-1. (done) Leader fixed CI: mongo service in api.yml.
-2. Relaunch implementer for the frontend auth UI (feedback_issue_3.md, change 1).
-3. Reviewer on the frontend work.
-4. Confirm both CI workflows green on PR #4, then report to user for merge.
+All CHANGES_REQUESTED items resolved. **Waiting for user to merge PR #4.**
+On merge → `gh issue close 3 --comment "Implemented in PR #4"`, append to history.md, clear current.md.
+
+## CHANGES_REQUESTED cycle — resolved
+
+1. (done) Leader fixed CI: mongo:7 service in api.yml → api workflow green.
+2. (done) Implementer built frontend login UI (commit ae64269): login form + validation,
+   auth service on /api/v1/auth/login, token persistence + Bearer header, expiry → re-login,
+   generic 401 error (no enumeration), /me authenticated view, logout, 21 frontend tests.
+3. (done) Reviewer: APPROVED -> progress/review_issue_3.md.
+4. (done) Both CI workflows green on PR #4: api ✅ + frontend ✅ (runs 27453632694 / 27453632686).
 
 ## Flow log
 

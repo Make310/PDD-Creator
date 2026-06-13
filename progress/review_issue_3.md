@@ -1,50 +1,39 @@
-# Review: User authentication with login
-**Issue:** #3
-**Branch:** feat/issue-3
-**Date:** 2026-06-12
-**Verdict:** APPROVED
+# Review — Issue #3 (retry: Required change 1, frontend login)
 
-## Acceptance criteria verification
+**Date:** 2026-06-12
+**Reviewer verdict:** APPROVED
+**Scope:** Required change 1 only (frontend auth UI). Required change 2 (CI mongo service)
+handled by the leader and out of scope for this review.
+
+## Acceptance criteria (from feedback_issue_3.md, Required change 1)
 
 | Criterion | Status | Evidence |
 |-----------|--------|----------|
-| Active user logs in and receives a token | Covered | `LoginCommandHandler` + `POST /api/v1/auth/login`; unit `test_execute_returns_token_for_active_user_with_valid_credentials`, acceptance `test_login_returns_token_for_valid_credentials` |
-| Same generic error for unknown email / wrong password / deactivated user | Covered | Single `InvalidCredentialsException` path mapped to one `401 {"detail": "Invalid credentials"}` in `auth_router.py`; three unit tests (one per case) + acceptance test. Identical by construction (one exception, one handler, one detail constant) |
-| Protected endpoint returns email, name, role | Covered | `GET /api/v1/auth/me` returns `UserResponse(email, name, role)`; acceptance `test_me_returns_authenticated_user_info` |
-| No token / invalid / expired token rejected | Covered | `authenticated_user` dependency (HTTPBearer + `AuthenticateUserCommandHandler`); acceptance tests for missing, garbage and real expired JWT (expired test exercises the real JWT service through the real dependency chain) |
-| First admin created without the API | Covered | `api/src/delivery/cli/create_admin.py` + `make create-admin`; use case unit-tested (`test_create_admin_user_command.py`); password via prompt or `ADMIN_PASSWORD` env var, never argv |
-| Passwords never stored or logged in plain text | Covered | `BcryptPasswordHasher` (hash on create, verify on login); unit test asserts hash never contains plain text; log statements only emit command ids, role and email |
+| Login form: email + password with client-side validation (missing + malformed) | OK | `src/components/LoginForm.tsx` + `src/hooks/useLogin.ts` `validate()` with `EMAIL_PATTERN`; per-field errors rendered. No service call when invalid. |
+| Auth service `POST /api/v1/auth/login` mapping `{access_token, token_type, expires_in}` | OK | `src/services/authService.ts` `login()` posts JSON to relative `/api/v1/auth/login` (nginx/vite proxy) and maps to `{accessToken, expiresIn}`. |
+| Token persisted, sent as `Authorization: Bearer`, expiration honored; expired/absent → login | OK | `src/services/tokenStorage.ts` stores absolute `expiresAt`, `readToken()` returns null + clears on absent/expired/corrupted. `fetchProfile()` sends bearer header. `useAuth` restores on mount and drops session on `/me` failure. |
+| Generic message on 401, no user enumeration | OK | `login()` throws `InvalidCredentialsError` on 401; `useLogin` shows single "Invalid credentials" form-level `role="alert"`. No field-specific leak. |
+| Authenticated view calls `GET /api/v1/auth/me`, renders email/name/role | OK | `useAuth.loadProfile` -> `fetchProfile`; `src/components/UserProfileCard.tsx` renders name, email, role. |
+| Logout clears token, returns to login | OK | `useAuth.logout` clears token + resets status; `AuthPanel` maps `unauthenticated` -> `LoginForm`. |
+| Tests: success login, generic error, missing-field validation, authenticated view shows /me | OK | `tests/components/AuthPanel.test.tsx` (7 tests incl. malformed email, session restore, logout), `tests/services/authService.test.ts` (5), `tests/services/tokenStorage.test.ts` (5). |
 
-## Edge cases verification
+## Architecture / style compliance
 
-| Edge case | Status | Evidence |
-|-----------|--------|----------|
-| Missing or malformed fields → validation error | Covered | `LoginRequest` (EmailStr, min_length=1); acceptance tests for empty body and malformed email → 422 |
-| Expired or tampered token → rejected | Covered | Unit tests: expired, tampered, foreign secret, no subject, garbage; acceptance: expired real JWT → 401 |
-| Deactivated user with correct password → same generic error | Covered | Unit `test_execute_rejects_deactivated_user_even_with_correct_password`; bonus: token of a user deactivated after issuing is also rejected |
+- Layering respected: only `services/` call `fetch`; hooks consume services; components consume hooks. (docs/frontend/architecture.md)
+- No `any`, explicit types and prop interfaces; no inline styles; brand `company-*` tokens only (all referenced tokens exist in `src/index.css`). (docs/frontend/code-style.md)
+- Tests mock at the service boundary, assert visible behavior via roles/labels, use `findBy*` for async; `tests/setup.ts` runs `cleanup()`. (docs/frontend/testing.md)
+- No unused exports/imports or dead code (ESLint clean; `Credentials`, `LoginResult`, `UserProfile`, `UnauthorizedError` all consumed). No new dependencies added.
 
-## Design notes compliance
-
-- Token lifetime 60 minutes: `auth_token_ttl_minutes = 60` in settings, `expires_in: 3600` asserted in tests
-- Out-of-scope items (registration endpoints, refresh, reset, SSO) correctly not implemented
-
-## Test and check results (run by reviewer)
+## Verification results (frontend/)
 
 ```
-make checks           -> ruff lint OK, ruff format OK (58 files), ty OK
-make test-unit        -> 22 passed
-make test-integration -> 3 passed (real MongoDB, isolated *_test database)
-make test-acceptance  -> 9 passed
+make checks   -> eslint OK, prettier OK, tsc -b OK
+make test     -> 5 files, 21 passed (AuthPanel 7, authService 5, tokenStorage 5, + existing health)
+npm run build -> tsc -b + vite build OK (built in ~446ms)
 ```
 
-## Code quality
+## Verdict
 
-- Hexagonal layering respected: domain ports (`UserRepository`, `PasswordHasher`, `TokenService`) with infrastructure adapters; delivery wires DI via FastAPI `Depends`
-- `AsyncCommandHandler` added alongside `CommandHandler` (open/closed, no modification of existing handler)
-- New dependencies (`beanie`, `pyjwt`, `bcrypt`) are all used; no unused imports or dead code found
-- Tests follow the three-tier structure and doublex `Mimic(Stub, ...)` conventions; `tests/support.py::resolved` is a reasonable shared helper for async stubbing
-
-## Minor observations (non-blocking)
-
-- `auth_secret_key` has an insecure dev default in settings and docker-compose fallback; acceptable for local dev since it is overridable via `AUTH_SECRET_KEY`, but production deployment must set it
-- `UserDocument.updated_at` is set but never updated after insert; will become relevant when user-management endpoints arrive (out of scope here)
+APPROVED — all Required change 1 acceptance criteria are covered, layering and style docs
+respected, no dead code or unused dependencies, and `make checks` / `make test` / `npm run build`
+are all green in `frontend/`.
